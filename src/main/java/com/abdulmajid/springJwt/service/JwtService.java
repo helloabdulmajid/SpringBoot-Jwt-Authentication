@@ -1,10 +1,12 @@
 package com.abdulmajid.springJwt.service;
 
 import com.abdulmajid.springJwt.model.User;
+import com.abdulmajid.springJwt.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     private final String SECRET_KEY = "7057b22f81d5bfaf34868ee82e21f937480f7c8e38df11573de4c87e7779fd44";
+    @Autowired
+    private TokenRepository tokenRepository;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -22,7 +26,10 @@ public class JwtService {
 
     public boolean isValid(String token, UserDetails user) {
         String username = extractUsername(token);
-        return (username.equals(user.getUsername())) && !isTokenExpired(token);
+
+        boolean isValidToken=tokenRepository.findByToken(token)
+                .map(t->!t.isLoggedOut()).orElse(false);
+        return (username.equals(user.getUsername())) && !isTokenExpired(token) && isValidToken;
     }
 
     private boolean isTokenExpired(String token) {

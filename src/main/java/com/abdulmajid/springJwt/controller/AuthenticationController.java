@@ -14,14 +14,12 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public AuthenticationResponse register(@RequestBody User request)
-    {
+    public AuthenticationResponse register(@RequestBody User request) {
         return authenticationService.register(request);
     }
 
     @PostMapping("/login")
-    public  AuthenticationResponse login(@RequestBody User request)
-    {
-        return  authenticationService.authenticate(request);
+    public AuthenticationResponse login(@RequestBody User request) {
+        return authenticationService.authenticate(request);
     }
 }
